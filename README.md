@@ -36,4 +36,3 @@ After installing and activating the DagPay extension in your Magento Admin Panel
 ## Plugin limitations
 
 * This plugin has been developed to work with Magento 2. It will not work for older Magento versions.
-* Current plugin version supports USD & EUR currencies in your Magento store. If your store base currency is setup as anything else, the DagPay will return an error and you cannot proceed with payment. We are adding support also in the near future for all other currencies.
