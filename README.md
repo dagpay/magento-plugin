@@ -12,7 +12,7 @@ DagPay helps you to accept lightning fast dagcoin payments directly from your eC
 
 ## Manual installation (via FTP)
 
-1. Download the [Magento2 extension .zip file](https://github.com/dagpay/magento-plugin/releases/download/v1.0.0/Dagcoin.zip).
+1. Download the [Magento2 extension .zip file](https://github.com/dagpay/magento-plugin/releases/download/v1.0.1/Dagcoin.zip).
 2. Login to your hosting space via a FTP client and navigate to the Magento root directory.
 3. Create a new directory app/code if it does not exist and unzip the extension .zip file there.
 4. After installing the plugin, make sure to run the following command ```setup:upgrade``` at the command line to edit one of the database tables. If you don't run it, magento will not store the DagPay invoice IDs in the database and the invoice will be unusable.

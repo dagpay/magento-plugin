@@ -6,11 +6,9 @@
 				<active>1</active>
                 <model>Dagcoin\PaymentGateway\Model\DagcoinPaymentMethod</model>
                 <order_status>pending</order_status>
-                <title>DagPay</title>
+                <title>Dagcoin</title>
                 <secret backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
 			</dagcoin>
-          
         </payment>
     </default>
 </config>
-

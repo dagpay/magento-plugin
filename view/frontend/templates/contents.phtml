@@ -15,11 +15,11 @@
 			<img style="width:100%" src="<?php echo $block->getViewFileUrl('Dagcoin_PaymentGateway::images/spinner.gif'); ?>">
 			<center>Redirecting you to DagPay</center>
 			</div>
-			<form name='instapaymentredirect' action='<?= $this->getAction() ?>'>
+			<form name="dagpaypaymentredirect" action='<?= $this->getAction() ?>'>
 				<input type='hidden' name='embed' value='form'>
 			</form>
 			<script>
-				document.instapaymentredirect.submit();
+				document.dagpaypaymentredirect.submit();
 			</script>
 		<?php endif; ?>
 	</div>
