@@ -62,7 +62,7 @@ class Main extends \Magento\Framework\View\Element\Template
                 $payment = $order->getPayment();
                 $client = $this->helper->getClient();
 
-                $invoice = $client->create_invoice(
+                $invoice = $client->createInvoice(
                     $payment->getData('entity_id'),
                     $order->getOrderCurrencyCode(),
                     $order->getGrandTotal()

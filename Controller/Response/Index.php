@@ -49,7 +49,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $data = json_decode($this->driver->fileGetContents("php://input"));
 
         $client = $this->helper->getClient();
-        $signature = $client->get_invoice_info_signature($data);
+        $signature = $client->getInvoiceInfoSignature($data);
         if ($signature != $data->signature) {
             return;
         }

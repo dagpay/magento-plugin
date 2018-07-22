@@ -56,7 +56,7 @@ class ControllerCancelOrder implements ObserverInterface
             $payment->save();
 
             $client = $this->helper->getClient();
-            $client->cancel_invoice($transaction->getTxnId());
+            $client->cancelInvoice($transaction->getTxnId());
         }
     }
 }
