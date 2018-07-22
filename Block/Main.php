@@ -11,72 +11,58 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
 
-class Main extends  \Magento\Framework\View\Element\Template
+class Main extends \Magento\Framework\View\Element\Template
 {
-	 protected $_objectmanager;
-	 protected $checkoutSession;
-	 protected $orderFactory;
-	 protected $urlBuilder;
-	 protected $response;
-	 protected $config;
-	 protected $messageManager;
-	 protected $transactionBuilder;
-	 protected $inbox;
-	 private $storeManager;
-	 protected $helper;
-	 public function __construct(Context $context,
-			Session $checkoutSession,
-			OrderFactory $orderFactory,
-			Http $response,
-			TransactionBuilder $tb,
-			 \Magento\AdminNotification\Model\Inbox $inbox,
-             \Dagcoin\PaymentGateway\Model\DagpayHelper $helper
-		) {
+    public $checkoutSession;
+    public $orderFactory;
+    public $response;
+    public $config;
+    public $transactionBuilder;
+    public $inbox;
+    private $storeManager;
+    private $helper;
+
+    public function __construct(
+        Context $context,
+        Session $checkoutSession,
+        OrderFactory $orderFactory,
+        Http $response,
+        TransactionBuilder $tb,
+        \Magento\AdminNotification\Model\Inbox $inbox,
+        \Dagcoin\PaymentGateway\Model\DagpayHelper $helper,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
+    ) {
 
         $this->checkoutSession = $checkoutSession;
         $this->orderFactory = $orderFactory;
         $this->response = $response;
         $this->config = $context->getScopeConfig();
         $this->transactionBuilder = $tb;
-		$this->inbox = $inbox;
-		$this->helper = $helper;
+        $this->inbox = $inbox;
+        $this->helper = $helper;
+        $this->storeManager = $storeManager;
 
-         $ds = DIRECTORY_SEPARATOR;
-         require_once(__DIR__ . "$ds..$ds/lib/DagpayClient.php");
-         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-         $env_id = $this->config->getValue("payment/dagcoin/environment_id",$storeScope);
-         $user_id = $this->config->getValue("payment/dagcoin/user_id",$storeScope);
-         $secret = $this->config->getValue("payment/dagcoin/secret",$storeScope);
-         $testmode = $this->config->getValue("payment/dagcoin/testmode",$storeScope);
-
-         $this->client = new \DagpayClient($env_id, $user_id, $secret, $testmode);
-        
-		$this->urlBuilder = \Magento\Framework\App\ObjectManager::getInstance()
-							->get('Magento\Framework\UrlInterface');
-
-		$this->storeManager = \Magento\Framework\App\ObjectManager::getInstance()
-                            ->get('\Magento\Store\Model\StoreManagerInterface');
-
-		parent::__construct($context);
+        parent::__construct($context);
     }
 
-	protected function _prepareLayout()
-	{
-        $method_data = array();
+    public function _prepareLayout()
+    {
+        $method_data = [];
         $orderId = $this->checkoutSession->getLastOrderId();
-		$order = $this->orderFactory->create()->load($orderId);
+        $order = $this->orderFactory->create()->load($orderId);
 
-		try {
+        try {
             if ($order) {
-                $transactions = $this->helper->get_transactions_by_order_id($orderId);
-                if (count($transactions) !== 0) {
-                    $this->redirect_to_base();
+                $transactions = $this->helper->getTransactionsByOrderId($orderId);
+                if (!empty($transactions)) {
+                    $this->redirectToBase();
                     return;
                 }
 
                 $payment = $order->getPayment();
+                $client = $this->helper->getClient();
 
-                $invoice = $this->client->create_invoice(
+                $invoice = $client->createInvoice(
                     $payment->getData('entity_id'),
                     $order->getOrderCurrencyCode(),
                     $order->getGrandTotal()
@@ -84,10 +70,11 @@ class Main extends  \Magento\Framework\View\Element\Template
 
                 $payment->setTransactionId($invoice->id);
                 $payment->setAdditionalInformation(
-                    [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => array("Transaction is yet to complete")]
+                    [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => ["Transaction is yet to complete"]]
                 );
 
-                $trn = $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+                $trn =
+                    $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
                 $trn->setIsClosed(0)->save();
                 $payment->addTransactionCommentsToOrder(
                     $trn,
@@ -99,18 +86,17 @@ class Main extends  \Magento\Framework\View\Element\Template
                 $order->save();
 
                 $this->setAction($invoice->paymentUrl);
-                $this->setMessages($method_data['errors']);
+                $this->setMessages(isset($method_data['errors']) ? $method_data['errors'] : null);
             } else {
-                $this->redirect_to_base();
+                $this->redirectToBase();
             }
-        } catch (DagpayException $e) {
-            $method_data['errors'][] = $e->getMessage();
         } catch (\Exception $e) {
             $method_data['errors'][] = "Couldn't proceed the payment... Please, refresh the page!";
         }
-	}
+    }
 
-	private function redirect_to_base() {
+    private function redirectToBase()
+    {
         $this->setAction($this->storeManager->getStore()->getBaseUrl());
     }
 }
