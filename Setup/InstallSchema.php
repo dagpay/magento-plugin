@@ -7,7 +7,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 
 class InstallSchema implements InstallSchemaInterface
 {
-    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    public function install(SchemaSetupInterface $setup)
     {
         $setup->startSetup();
 
