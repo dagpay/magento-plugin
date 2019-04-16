@@ -1,4 +1,4 @@
-# dagpay-magento-plugin
+# Dagpay Magento 2 plugin
 
 Accept dagcoin payments on your Magento 2 store
 
