@@ -1,13 +1,15 @@
 <?php
+
 namespace Dagcoin\PaymentGateway\Setup;
 
+use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
-use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\SchemaSetupInterface;
 
 class InstallSchema implements InstallSchemaInterface
 {
-    public function install(SchemaSetupInterface $setup)
+    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
 
@@ -16,7 +18,7 @@ class InstallSchema implements InstallSchemaInterface
             'txn_id',
             'txn_id',
             [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'type' => Table::TYPE_TEXT,
                 'length' => 255,
             ]
         );

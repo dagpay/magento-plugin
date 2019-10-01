@@ -1,17 +1,19 @@
 <?php
+
 namespace Dagcoin\PaymentGateway\Controller\Response;
 
-use Magento\Framework\View\Result\PageFactory;
+use Dagcoin\PaymentGateway\Model\DagpayHelper;
+use Magento\AdminNotification\Model\Inbox;
+use Magento\Checkout\Model\Cart;
+use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
-use Magento\Sales\Model\Order\Payment\Transaction;
 
-class Index extends \Magento\Framework\App\Action\Action
+class Index extends Action
 {
     public $checkoutSession;
     public $orderFactory;
@@ -20,18 +22,19 @@ class Index extends \Magento\Framework\App\Action\Action
     public $cart;
     public $inbox;
     public $driver;
-     
+
     public function __construct(
         Context $context,
         Session $checkoutSession,
         OrderFactory $orderFactory,
         Http $response,
         TransactionBuilder $tb,
-        \Magento\Checkout\Model\Cart $cart,
-        \Magento\AdminNotification\Model\Inbox $inbox,
-        \Dagcoin\PaymentGateway\Model\DagpayHelper $helper,
-        \Magento\Framework\Filesystem\Driver $driver
-    ) {
+        Cart $cart,
+        Inbox $inbox,
+        DagpayHelper $helper,
+        Driver $driver
+    )
+    {
         $this->checkoutSession = $checkoutSession;
         $this->orderFactory = $orderFactory;
         $this->response = $response;
@@ -40,17 +43,17 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->inbox = $inbox;
         $this->helper = $helper;
         $this->driver = $driver;
-        
+
         parent::__construct($context);
     }
 
     public function execute()
     {
-        $data = json_decode($this->driver->fileGetContents("php://input"));
+        $data = json_decode($this->driver->fileGetContents('php://input'));
 
         $client = $this->helper->getClient();
         $signature = $client->getInvoiceInfoSignature($data);
-        if ($signature != $data->signature) {
+        if ($signature !== $data->signature) {
             return;
         }
 
@@ -63,30 +66,34 @@ class Index extends \Magento\Framework\App\Action\Action
             case 'PAID_EXPIRED':
                 $payment->addTransactionCommentsToOrder(
                     $transaction,
-                    "The transaction is paid."
+                    'The transaction is paid.'
                 );
                 $transaction->setIsClosed(1)->save();
                 $payment->setAmountPaid($data->currencyAmount);
                 $order->setState(Order::STATE_PROCESSING)->setStatus(Order::STATE_PROCESSING);
+
                 break;
             case 'CANCELLED':
                 $order->cancel();
+
                 break;
             case 'EXPIRED':
                 $transaction->setIsClosed(1)->save();
                 $order->cancel();
                 $payment->addTransactionCommentsToOrder(
                     $transaction,
-                    "The transaction has expired."
+                    'The transaction has expired.'
                 );
+
                 break;
             case 'FAILED':
                 $transaction->setIsClosed(1)->save();
                 $order->cancel();
                 $payment->addTransactionCommentsToOrder(
                     $transaction,
-                    "The transaction has failed."
+                    'The transaction has failed.'
                 );
+
                 break;
         }
 

@@ -1,17 +1,21 @@
 <?php
+
 namespace Dagcoin\PaymentGateway\Block;
 
-use Magento\Framework\Api\Filter;
-use Magento\Framework\Api\Search\FilterGroup;
-use Magento\Framework\View\Result\PageFactory;
+use Dagcoin\PaymentGateway\Model\DagpayHelper;
+use Exception;
+use Magento\AdminNotification\Model\Inbox;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Checkout\Model\Session;
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
+use Magento\Framework\View\Element\Template;
+use Magento\Store\Model\StoreManagerInterface;
 
-class Main extends \Magento\Framework\View\Element\Template
+class Main extends Template
 {
     public $checkoutSession;
     public $orderFactory;
@@ -28,11 +32,11 @@ class Main extends \Magento\Framework\View\Element\Template
         OrderFactory $orderFactory,
         Http $response,
         TransactionBuilder $tb,
-        \Magento\AdminNotification\Model\Inbox $inbox,
-        \Dagcoin\PaymentGateway\Model\DagpayHelper $helper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
-    ) {
-
+        Inbox $inbox,
+        DagpayHelper $helper,
+        StoreManagerInterface $storeManager
+    )
+    {
         $this->checkoutSession = $checkoutSession;
         $this->orderFactory = $orderFactory;
         $this->response = $response;
@@ -49,7 +53,9 @@ class Main extends \Magento\Framework\View\Element\Template
     {
         $method_data = [];
         $orderId = $this->checkoutSession->getLastOrderId();
-        $order = $this->orderFactory->create()->load($orderId);
+
+        $objectManager = ObjectManager::getInstance();
+        $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
 
         try {
             if ($order) {
@@ -69,16 +75,13 @@ class Main extends \Magento\Framework\View\Element\Template
                 )->payload;
 
                 $payment->setTransactionId($invoice->id);
-                $payment->setAdditionalInformation(
-                    [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => ["Transaction is yet to complete"]]
-                );
+                $payment->setAdditionalInformation([Transaction::RAW_DETAILS => ['Transaction is yet to complete']]);
 
-                $trn =
-                    $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+                $trn = $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
                 $trn->setIsClosed(0)->save();
                 $payment->addTransactionCommentsToOrder(
                     $trn,
-                    "The transaction is yet to complete."
+                    'The transaction is yet to complete.'
                 );
 
                 $payment->setParentTransactionId(null);
@@ -90,7 +93,7 @@ class Main extends \Magento\Framework\View\Element\Template
             } else {
                 $this->redirectToBase();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $method_data['errors'][] = "Couldn't proceed the payment... Please, refresh the page!";
         }
     }
