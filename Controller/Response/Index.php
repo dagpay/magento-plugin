@@ -4,11 +4,11 @@ namespace Dagcoin\PaymentGateway\Controller\Response;
 
 use Dagcoin\PaymentGateway\Model\DagpayHelper;
 use Magento\AdminNotification\Model\Inbox;
-use Magento\Checkout\Model\Cart;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\Order;
+use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
@@ -29,7 +29,7 @@ class Index extends Action
         OrderFactory $orderFactory,
         Http $response,
         TransactionBuilder $tb,
-        Cart $cart,
+        Quote $quote,
         Inbox $inbox,
         DagpayHelper $helper,
         Driver $driver
@@ -39,7 +39,7 @@ class Index extends Action
         $this->orderFactory = $orderFactory;
         $this->response = $response;
         $this->transactionBuilder = $tb;
-        $this->cart = $cart;
+        $this->quote = $quote;
         $this->inbox = $inbox;
         $this->helper = $helper;
         $this->driver = $driver;
