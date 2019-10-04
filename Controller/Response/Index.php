@@ -1,4 +1,5 @@
 <?php
+
 namespace Dagcoin\PaymentGateway\Controller\Response;
 
 use Magento\Framework\View\Result\PageFactory;
@@ -20,7 +21,7 @@ class Index extends \Magento\Framework\App\Action\Action
     public $cart;
     public $inbox;
     public $driver;
-     
+
     public function __construct(
         Context $context,
         Session $checkoutSession,
@@ -31,7 +32,8 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\AdminNotification\Model\Inbox $inbox,
         \Dagcoin\PaymentGateway\Model\DagpayHelper $helper,
         \Magento\Framework\Filesystem\Driver $driver
-    ) {
+    )
+    {
         $this->checkoutSession = $checkoutSession;
         $this->orderFactory = $orderFactory;
         $this->response = $response;
@@ -40,7 +42,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->inbox = $inbox;
         $this->helper = $helper;
         $this->driver = $driver;
-        
+
         parent::__construct($context);
     }
 

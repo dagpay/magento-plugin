@@ -10,10 +10,10 @@ class DagcoinPaymentMethod extends \Magento\Payment\Model\Method\AbstractMethod
     public $_code = 'dagcoin';
     public $_canOrder = true;
     public $_isGateway = true;
-    
+
     public function getOrderPlaceRedirectUrl()
     {
         return \Magento\Framework\App\ObjectManager::getInstance()
-                            ->get('Magento\Framework\UrlInterface')->getUrl("dagcoin/redirect");
+            ->get('Magento\Framework\UrlInterface')->getUrl("dagcoin/redirect");
     }
 }

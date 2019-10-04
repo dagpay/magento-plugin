@@ -18,7 +18,8 @@ class DagpayHelper
         \Magento\Sales\Model\OrderRepository $orderRepository,
         \Magento\Framework\Api\SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory,
         \Dagcoin\PaymentGateway\lib\DagpayClientFactory $clientFactory
-    ) {
+    )
+    {
         $this->config = $context->getScopeConfig();
         $this->transactionRepository = $transactionRepository;
         $this->paymentRepository = $paymentRepository;
@@ -31,10 +32,10 @@ class DagpayHelper
     {
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
         return $this->clientFactory->create([
-        'environment_id' => $this->config->getValue("payment/dagcoin/environment_id", $storeScope),
-        'user_id' => $this->config->getValue("payment/dagcoin/user_id", $storeScope),
-        'secret' => $this->config->getValue("payment/dagcoin/secret", $storeScope),
-        'mode' => $this->config->getValue("payment/dagcoin/testmode", $storeScope),
+            'environment_id' => $this->config->getValue("payment/dagcoin/environment_id", $storeScope),
+            'user_id' => $this->config->getValue("payment/dagcoin/user_id", $storeScope),
+            'secret' => $this->config->getValue("payment/dagcoin/secret", $storeScope),
+            'mode' => $this->config->getValue("payment/dagcoin/testmode", $storeScope),
             'platform' => 'standalone'
         ]);
     }

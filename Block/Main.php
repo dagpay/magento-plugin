@@ -1,17 +1,15 @@
 <?php
+
 namespace Dagcoin\PaymentGateway\Block;
 
-use Magento\Framework\Api\Filter;
-use Magento\Framework\Api\Search\FilterGroup;
-use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Checkout\Model\Session;
-use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
 
-class Main extends \Magento\Framework\View\Element\Template
+class Main extends Template
 {
     public $checkoutSession;
     public $orderFactory;
@@ -32,7 +30,6 @@ class Main extends \Magento\Framework\View\Element\Template
         \Dagcoin\PaymentGateway\Model\DagpayHelper $helper,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-
         $this->checkoutSession = $checkoutSession;
         $this->orderFactory = $orderFactory;
         $this->response = $response;
@@ -56,6 +53,7 @@ class Main extends \Magento\Framework\View\Element\Template
                 $transactions = $this->helper->getTransactionsByOrderId($orderId);
                 if (!empty($transactions)) {
                     $this->redirectToBase();
+
                     return;
                 }
 
@@ -70,7 +68,7 @@ class Main extends \Magento\Framework\View\Element\Template
 
                 $payment->setTransactionId($invoice->id);
                 $payment->setAdditionalInformation(
-                    [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => ["Transaction is yet to complete"]]
+                    [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => ['Transaction is yet to complete']]
                 );
 
                 $trn =
@@ -78,7 +76,7 @@ class Main extends \Magento\Framework\View\Element\Template
                 $trn->setIsClosed(0)->save();
                 $payment->addTransactionCommentsToOrder(
                     $trn,
-                    "The transaction is yet to complete."
+                    'The transaction is yet to complete.'
                 );
 
                 $payment->setParentTransactionId(null);
