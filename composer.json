@@ -21,7 +21,6 @@
     "magento/module-checkout": ">=100.0.0",
     "magento/module-payment": ">=100.0.0",
     "magento/framework": ">=100.0.0",
-    "magento/magento-composer-installer": ">=100.0.0",
     "dagpay/client-php": "^1.0"
   },
   "autoload": {
