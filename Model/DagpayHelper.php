@@ -37,13 +37,13 @@ class DagpayHelper
     {
         $storeScope = ScopeInterface::SCOPE_STORE;
 
-        return new DagpayClient([
-            'environment_id' => $this->config->getValue('payment/dagcoin/environment_id', $storeScope),
-            'user_id' => $this->config->getValue('payment/dagcoin/user_id', $storeScope),
-            'secret' => $this->config->getValue('payment/dagcoin/secret', $storeScope),
-            'mode' => $this->config->getValue('payment/dagcoin/testmode', $storeScope),
-            'platform' => 'standalone'
-        ]);
+        return new DagpayClient(
+            $this->config->getValue('payment/dagcoin/environment_id', $storeScope),
+            $this->config->getValue('payment/dagcoin/user_id', $storeScope),
+            $this->config->getValue('payment/dagcoin/secret', $storeScope),
+            $this->config->getValue('payment/dagcoin/testmode', $storeScope),
+            'standalone'
+        );
     }
 
     private function getSearchCriteriaBuilder()

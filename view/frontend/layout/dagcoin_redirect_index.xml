@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+      xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block cacheable="false" name='dagpay_block' class="Dagcoin\PaymentGateway\Block\Main"
+            <block cacheable="false" name="dagcoin_redirect" class="Dagcoin\PaymentGateway\Block\Main"
                    template="Dagcoin_PaymentGateway::contents.phtml"/>
         </referenceContainer>
     </body>

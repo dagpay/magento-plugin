@@ -60,8 +60,11 @@ class Main extends Template
         try {
             if ($order) {
                 $transactions = $this->helper->getTransactionsByOrderId($orderId);
+                //var_dump($transactions);
+                //die;
                 if (!empty($transactions)) {
                     $this->redirectToBase();
+                    $this->setMessages(isset($method_data['errors']) ? $method_data['errors'] : null);
                     return;
                 }
 
@@ -94,7 +97,7 @@ class Main extends Template
                 $this->redirectToBase();
             }
         } catch (Exception $e) {
-            $method_data['errors'][] = "Couldn't proceed the payment... Please, refresh the page!";
+            $this->setMessages(["Couldn't proceed with the payment... Please, refresh the page."]);
         }
     }
 
