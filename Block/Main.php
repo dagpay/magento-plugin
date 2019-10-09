@@ -41,7 +41,6 @@ class Main extends Template
         $this->inbox = $inbox;
         $this->helper = $helper;
         $this->storeManager = $storeManager;
-
         parent::__construct($context);
     }
 
@@ -53,16 +52,11 @@ class Main extends Template
         $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
         try {
             if ($order) {
-                $transactions = $this->helper->getTransactionsByOrderId($orderId);
-                if (!empty($transactions)) {
-                    foreach ($transactions as $transaction) {
-                        if ($transaction->getIsClosed()) {
-                            $this->redirectToBase();
-                            $this->setMessages(['Order has already been paid.']);
+                if ($order->getStatus() !== 'pending') {
+                    $this->redirectToBase();
+                    $this->setMessages(['Order cannot be paid.']);
 
-                            return;
-                        }
-                    }
+                    return;
                 }
 
                 $payment = $order->getPayment();
