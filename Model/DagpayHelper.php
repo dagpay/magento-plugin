@@ -17,6 +17,7 @@ class DagpayHelper
     private $paymentRepository;
     private $orderRepository;
     private $searchCriteriaBuilderFactory;
+    private $client;
 
     public function __construct(
         Context $context,
@@ -35,15 +36,16 @@ class DagpayHelper
 
     public function getClient()
     {
-        $storeScope = ScopeInterface::SCOPE_STORE;
-
-        return new DagpayClient(
-            $this->config->getValue('payment/dagcoin/environment_id', $storeScope),
-            $this->config->getValue('payment/dagcoin/user_id', $storeScope),
-            $this->config->getValue('payment/dagcoin/secret', $storeScope),
-            $this->config->getValue('payment/dagcoin/testmode', $storeScope),
-            'standalone'
-        );
+        if (!$this->client) {
+            $this->client = new DagpayClient(
+                $this->config->getValue('payment/dagcoin/environment_id', ScopeInterface::SCOPE_STORE),
+                $this->config->getValue('payment/dagcoin/user_id', ScopeInterface::SCOPE_STORE),
+                $this->config->getValue('payment/dagcoin/secret', ScopeInterface::SCOPE_STORE),
+                $this->config->getValue('payment/dagcoin/testmode', ScopeInterface::SCOPE_STORE),
+                'standalone'
+            );
+        }
+        return $this->client;
     }
 
     private function getSearchCriteriaBuilder()

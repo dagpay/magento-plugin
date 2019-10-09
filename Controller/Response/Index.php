@@ -12,6 +12,7 @@ use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
+use Magento\Framework\Filesystem\Driver\File;
 
 class Index extends Action
 {
@@ -32,7 +33,7 @@ class Index extends Action
         Quote $quote,
         Inbox $inbox,
         DagpayHelper $helper,
-        Driver $driver
+        File $driver
     )
     {
         $this->checkoutSession = $checkoutSession;
@@ -47,12 +48,15 @@ class Index extends Action
         parent::__construct($context);
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\FileSystemException
+     */
     public function execute()
     {
         $data = json_decode($this->driver->fileGetContents('php://input'));
-
         $client = $this->helper->getClient();
-        $signature = $client->getInvoiceInfoSignature($data);
+        $signature = $client->get_invoice_info_signature($data);
         if ($signature !== $data->signature) {
             return;
         }
@@ -99,5 +103,6 @@ class Index extends Action
 
         $payment->save();
         $order->save();
+        return 'ok';
     }
 }

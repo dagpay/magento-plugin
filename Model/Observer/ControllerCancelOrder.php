@@ -26,10 +26,13 @@ class ControllerCancelOrder implements ObserverInterface
         $this->helper = $helper;
     }
 
+    /**
+     * @param Observer $observer
+     * @throws \Exception
+     */
     public function execute(Observer $observer)
     {
         $order = $observer->getData('order');
-
         if (!$order) {
             return;
         }
@@ -42,13 +45,9 @@ class ControllerCancelOrder implements ObserverInterface
         $transaction = array_values($transactions)[0];
         $payments = $this->helper->getOrderPayment($transaction->getPaymentId());
         $payment = array_values($payments)[0];
-
         if ($payment->getMethod() !== 'dagcoin') {
             return;
         }
-
-        $this->storeManager = ObjectManager::getInstance()->get('\Magento\Store\Model\StoreManagerInterface');
-
         if (!$transaction->getIsClosed()) {
             $transaction->setIsClosed(1)->save();
             $payment->addTransactionCommentsToOrder(
@@ -58,7 +57,7 @@ class ControllerCancelOrder implements ObserverInterface
             $payment->save();
 
             $client = $this->helper->getClient();
-            $client->cancelInvoice($transaction->getTxnId());
+            $client->cancel_invoice($transaction->getTxnId());
         }
     }
 }

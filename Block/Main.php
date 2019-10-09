@@ -51,27 +51,28 @@ class Main extends Template
 
     public function _prepareLayout()
     {
-        $method_data = [];
         $orderId = $this->checkoutSession->getLastOrderId();
 
         $objectManager = ObjectManager::getInstance();
         $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
-
         try {
             if ($order) {
                 $transactions = $this->helper->getTransactionsByOrderId($orderId);
-                //var_dump($transactions);
-                //die;
                 if (!empty($transactions)) {
-                    $this->redirectToBase();
-                    $this->setMessages(isset($method_data['errors']) ? $method_data['errors'] : null);
-                    return;
+                    foreach ($transactions as $transaction) {
+                        if ($transaction->getIsClosed()) {
+                            $this->redirectToBase();
+                            $this->setMessages(['Order has already been paid.']);
+
+                            return;
+                        }
+                    }
                 }
 
                 $payment = $order->getPayment();
                 $client = $this->helper->getClient();
 
-                $invoice = $client->createInvoice(
+                $invoice = $client->create_invoice(
                     $payment->getData('entity_id'),
                     $order->getOrderCurrencyCode(),
                     $order->getGrandTotal()
@@ -92,7 +93,6 @@ class Main extends Template
                 $order->save();
 
                 $this->setAction($invoice->paymentUrl);
-                $this->setMessages(isset($method_data['errors']) ? $method_data['errors'] : null);
             } else {
                 $this->redirectToBase();
             }
