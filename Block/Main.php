@@ -9,7 +9,6 @@ use Magento\Framework\App\ObjectManager;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\Order\Payment\Transaction;
-use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\Response\Http;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder as TransactionBuilder;
 use Magento\Framework\View\Element\Template;
@@ -18,7 +17,6 @@ use Magento\Store\Model\StoreManagerInterface;
 class Main extends Template
 {
     public $checkoutSession;
-    public $orderFactory;
     public $response;
     public $config;
     public $transactionBuilder;
@@ -29,7 +27,6 @@ class Main extends Template
     public function __construct(
         Context $context,
         Session $checkoutSession,
-        OrderFactory $orderFactory,
         Http $response,
         TransactionBuilder $tb,
         Inbox $inbox,
@@ -38,7 +35,6 @@ class Main extends Template
     )
     {
         $this->checkoutSession = $checkoutSession;
-        $this->orderFactory = $orderFactory;
         $this->response = $response;
         $this->config = $context->getScopeConfig();
         $this->transactionBuilder = $tb;
