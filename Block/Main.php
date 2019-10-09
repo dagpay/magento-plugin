@@ -47,9 +47,7 @@ class Main extends Template
     public function _prepareLayout()
     {
         $orderId = $this->checkoutSession->getLastOrderId();
-
-        $objectManager = ObjectManager::getInstance();
-        $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
+        $order = ObjectManager::getInstance()->create('\Magento\Sales\Model\Order')->load($orderId);
         try {
             if ($order) {
                 if ($order->getStatus() !== 'pending') {
